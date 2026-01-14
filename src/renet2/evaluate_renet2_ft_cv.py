@@ -561,12 +561,12 @@ def renet2_train(args):
     
     
             # loading pretrained abstract model
-            #args.modle_dir = '../models/'
+            #args.model_dir = '../models/'
             #model_name_prefix = 'Bst_abs_10'
     
             #print('loading based model from', model_name_prefix)
-            #checkpoint_f = os.path.join(args.modle_dir, model_name_prefix + ".ckp")
-            #config_save_f = os.path.join(args.modle_dir,  model_name_prefix + ".cf")
+            #checkpoint_f = os.path.join(args.model_dir, model_name_prefix + ".ckp")
+            #config_save_f = os.path.join(args.model_dir,  model_name_prefix + ".cf")
 
             checkpoint_f = os.path.join(args.pretrained_model_p + ".ckp")
             config_save_f = os.path.join(args.pretrained_model_p + ".cf")
@@ -619,11 +619,11 @@ def renet2_train(args):
             scheduler.step(0)
     
             is_save_new_train = False
-            args.modle_dir = args.raw_data_dir
+            args.model_dir = args.raw_data_dir
             model_name_prefix = 'build_ft_base'
     
-            args.checkpoint_f = os.path.join(args.modle_dir, model_name_prefix + ".ckp")
-            args.config_save_f = os.path.join(args.modle_dir,  model_name_prefix + ".cf")
+            args.checkpoint_f = os.path.join(args.model_dir, model_name_prefix + ".ckp")
+            args.config_save_f = os.path.join(args.model_dir,  model_name_prefix + ".cf")
             if is_save_new_train:
                 torch.save(config, args.config_save_f)
     
@@ -818,17 +818,17 @@ def init_self_parser():
     )
 
     parser.add_argument(
-            "--modle_dir",
+            "--model_dir",
             default = "../model",
             type=str,
-            help="modle data dir",
+            help="model data dir",
     )
 
     parser.add_argument(
             "--label_f_name",
             default = "labels.txt",
             type=str,
-            help="modle label name",
+            help="model label name",
     )
     parser.add_argument(
             "--file_name_doc",

@@ -614,11 +614,11 @@ def parse_data(config):
     is_ft = True if config.type == "ft" else False
 
     if config.in_abs_dir is None:
-        print('Error! Parsing abstracts require abstracts pubtator files, please set the in_abs_dir first')
+        print('Error! Parsing abstracts requires abstracts pubtator files, please set the in_abs_dir first')
         return
     if is_ft:
         if config.in_ft_dir is None:
-            print('Error! Parsing full-text require full-text json files, please set the in_ft_dir first')
+            print('Error! Parsing full-text requires full-text json files, please set the in_ft_dir first')
             return
     in_abs_dir = config.in_abs_dir
     in_ft_dir = config.in_ft_dir
@@ -630,13 +630,10 @@ def parse_data(config):
         id_df = id_df.drop_duplicates()
 
         if is_ft:
-            #id_df['pmcid'] = id_df['pmcid'].apply(lambda x: x.strip())
-            #tar_lst = id_df[['pmcid', 'pmid']].values.tolist()
-            tar_lst = list(id_df.pmcid.values)
-            #print(tar_lst[:3])
+            tar_lst = list(id_df.values)
             parse_data_ft(tar_lst, in_abs_dir, in_ft_dir, out_dir, not config.no_s_f)
         else:
-            tar_lst = list(id_df.pmid.values)
+            tar_lst = list(id_df.values)
             parse_data_abs(tar_lst, in_abs_dir, out_dir, not config.no_s_f)
 
     except Exception as e: 

@@ -1,10 +1,12 @@
-import sys
-import os
-import json 
 import argparse
-import urllib.request
+import json
 import multiprocessing
+import os
+import sys
+import urllib.request
+
 import pandas as pd
+
 
 # download abstact text and NER annotation in pubtator format
 def download_abs(X):
@@ -134,8 +136,18 @@ def download_from_lst_ft(tar_pmcid_lst, tar_dir, cores = 3):
 
 
 def download_data(config):
+    """Download data from PubMed Central (PMC) using a configuration object.
+
+    The config object should have the following attributes:
+        - id_f (str): path to the file containing the PMC or PubMed IDs of the articles to download
+        - type (str): "ft" for full-text articles, "abs" for abstracts only
+        - dir (str): directory to save the downloaded articles
+        - tmp_hit_f (str): path to the file to save the record of successfully downloaded articles
+        - process_n (int): number of processes to use for downloading (default: number of CPU cores)
+    """
 
     id_f = config.id_f
+    id_type = config.id_type
     is_ft = True if config.type == "ft" else False
     tar_dir = config.dir
     tmp_f = config.tmp_hit_f
@@ -149,15 +161,17 @@ def download_data(config):
         id_df = pd.read_csv(id_f, header=0, dtype=str)
         id_df = id_df.drop_duplicates()
 
-        if is_ft:
-            tar_pmcid_lst = list(id_df.pmcid.values)
+        if is_ft & id_type == 'pmcid':
+            tar_pmcid_lst = list(id_df.values)
             rst_rec = download_from_lst_ft(tar_pmcid_lst, tar_dir, cores)
+            col = 'pmcid'
         else:
-            tar_pmid_lst = list(id_df.pmid.values)
+            tar_pmid_lst = list(id_df.values)
             rst_rec = download_from_lst_abs(tar_pmid_lst, tar_dir, cores)
+            col = 'pmid'
 
         print('hit records at {}'.format(tmp_f))
-        pd.DataFrame(rst_rec, columns=['pmcid' if is_ft else 'pmid']).to_csv(tmp_f, index=False)
+        pd.DataFrame(rst_rec, columns=[col]).to_csv(tmp_f, index=False)
 
     except Exception as e: 
         print(e)
@@ -175,8 +189,11 @@ def main():
     parser.add_argument('--id_f', type=str, default="../data/test_download_pmid_list.csv",
                         help="PMID/PMCID list file input, default: %(default)s")
 
+    parser.add_argument('--id_type', type=str, default="pmcid",
+            help="[pmcid, pmid] article id type: pmid or pmcid default: %(default)s")
+
     parser.add_argument('--type', type=str, default="abs",
-            help="[abs, ft] download text type: abstrcts or full-text default: %(default)s")
+            help="[abs, ft] download text type: abstracts or full-text default: %(default)s")
 
     parser.add_argument('--dir', type=str, default="../data/raw_data/abs/",
             help="output dir default: %(default)s")
